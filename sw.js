@@ -1,6 +1,6 @@
 // Bump this string at each deploy — it's what the "Vérifier les mises à jour"
 // button in index.html compares against to know a new version exists.
-const APP_VERSION = '1.0.7';
+const APP_VERSION = '1.0.8';
 
 const CACHE_ALLOWLIST = []; // no caches kept on purpose
 
