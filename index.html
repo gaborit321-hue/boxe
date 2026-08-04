@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boxe</title>
+<meta name="theme-color" content="#14110d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Boxe">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14110d;
+    --surface: #1e1a15;
+    --surface-raised: #26211a;
+    --rope: #332b21;
+    --red: #c8272c;
+    --gold: #cf9f3f;
+    --text: #f3ede1;
+    --muted: #8f8579;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    padding: 0 0 48px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 100vh;
+  }
+
+  .header {
+    padding: 32px 20px 20px;
+    border-bottom: 2px solid var(--rope);
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin: 0 0 4px;
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px;
+    letter-spacing: 0.03em;
+    margin: 0;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .rounds {
+    padding: 24px 20px 4px;
+    text-align: center;
+  }
+  .rounds-count {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 96px;
+    line-height: 0.9;
+    color: var(--red);
+    margin: 0;
+  }
+  .rounds-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 4px 0 20px;
+  }
+
+  .dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    padding: 0 20px 24px;
+  }
+  .dot {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--rope);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    transition: all 0.15s ease;
+  }
+  .dot.done {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff2ef;
+  }
+
+  .price-row {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 0 20px 28px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .price-row b { color: var(--gold); font-weight: 500; }
+
+  .panel {
+    background: var(--surface);
+    margin: 0 16px 16px;
+    border-radius: 14px;
+    padding: 18px 18px 20px;
+    border: 1px solid var(--rope);
+  }
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 14px;
+  }
+
+  .field-row { display: flex; gap: 10px; margin-bottom: 14px; }
+  .field { flex: 1; }
+  label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  input[type="date"], input[type="time"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--rope);
+    background: var(--surface-raised);
+    color: var(--text);
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    color-scheme: dark;
+  }
+
+  button {
+    width: 100%;
+    padding: 15px;
+    border-radius: 9px;
+    border: 1px solid var(--rope);
+    background: var(--surface-raised);
+    color: var(--text);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 17px;
+    letter-spacing: 0.04em;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  button:active { transform: scale(0.98); }
+  button.primary { background: var(--red); color: #fff2ef; border: none; }
+  button.gold { border: 1px solid var(--gold); color: var(--gold); background: transparent; }
+  button:disabled { opacity: 0.4; }
+  a.cal-link { display: block; text-decoration: none; }
+
+  details.history { margin: 0 16px 16px; }
+  details.history summary {
+    list-style: none;
+    cursor: pointer;
+    background: var(--surface);
+    border: 1px solid var(--rope);
+    border-radius: 14px;
+    padding: 16px 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  details.history summary::-webkit-details-marker { display: none; }
+  details.history summary::after {
+    content: '▾';
+    color: var(--muted);
+    transition: transform 0.15s ease;
+  }
+  details.history[open] summary::after { transform: rotate(180deg); }
+  details.history[open] summary { border-radius: 14px 14px 0 0; border-bottom: none; }
+
+  .log {
+    background: var(--surface);
+    border: 1px solid var(--rope);
+    border-top: none;
+    border-radius: 0 0 14px 14px;
+    padding: 4px 0;
+  }
+  .log-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 18px;
+    border-top: 1px solid var(--rope);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .log-row:first-child { border-top: none; }
+  .log-num { color: var(--red); min-width: 22px; }
+  .log-date { color: var(--text); }
+  .log-time { color: var(--muted); margin-left: auto; }
+  .log-empty { padding: 18px; text-align: center; color: var(--muted); font-family: var(--mono); font-size: 13px; }
+
+  .note {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    padding: 4px 20px 0;
+    line-height: 1.6;
+  }
+
+  details.settings { margin: 0 16px 16px; }
+  details.settings summary {
+    list-style: none;
+    cursor: pointer;
+    background: var(--surface);
+    border: 1px solid var(--rope);
+    border-radius: 14px;
+    padding: 16px 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  details.settings summary::-webkit-details-marker { display: none; }
+  details.settings summary::after { content: '▾'; color: var(--muted); transition: transform 0.15s ease; }
+  details.settings[open] summary::after { transform: rotate(180deg); }
+  details.settings[open] summary { border-radius: 14px 14px 0 0; border-bottom: none; }
+  .settings-body {
+    background: var(--surface);
+    border: 1px solid var(--rope);
+    border-top: none;
+    border-radius: 0 0 14px 14px;
+    padding: 16px 18px 18px;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--rope);
+    background: var(--surface-raised);
+    color: var(--text);
+    font-size: 13px;
+    font-family: var(--mono);
+    margin-bottom: 12px;
+  }
+  .sync-status {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <p class="eyebrow">Carte de séances</p>
+  <h1>SÉANCES DE BOXE</h1>
+</div>
+
+<div class="rounds">
+  <p class="rounds-count" id="remaining">10</p>
+  <p class="rounds-label">rounds restants</p>
+</div>
+
+<div class="dots" id="dots"></div>
+
+<div class="price-row">
+  <span>Forfait <b id="totalSessions">10</b> séances</span>
+  <span>Prix / séance <b id="perSession">30€</b></span>
+</div>
+
+<div class="panel">
+  <p class="panel-title">Nouvelle séance</p>
+  <div class="field-row">
+    <div class="field">
+      <label for="sessionDate">Date</label>
+      <input type="date" id="sessionDate">
+    </div>
+    <div class="field">
+      <label for="sessionTime">Heure</label>
+      <input type="time" id="sessionTime">
+    </div>
+  </div>
+  <button class="primary" id="logBtn">J'ai fait une séance</button>
+  <a class="cal-link" id="calLink" href="#" target="_blank">
+    <button type="button" class="gold" id="calBtn">Ajouter au calendrier</button>
+  </a>
+</div>
+
+<button style="margin:0 16px 16px; width: calc(100% - 32px);" id="newPackBtn">Nouveau forfait (300€ / 10 séances)</button>
+
+<details class="settings">
+  <summary>Réglages</summary>
+  <div class="settings-body">
+    <label for="sheetUrl">URL Apps Script (Google Sheet)</label>
+    <input type="text" id="sheetUrl" placeholder="https://script.google.com/macros/s/.../exec">
+    <p class="sync-status" id="syncStatus">Aucune synchronisation lancée.</p>
+    <button class="gold" id="syncBtn">Synchroniser tout l'historique</button>
+  </div>
+</details>
+
+<details class="history">
+  <summary>Historique complet<span id="histCount"></span></summary>
+  <div class="log" id="log"></div>
+</details>
+
+<p class="note">Le lien « Ajouter au calendrier » ouvre Google Calendar pré-rempli (1h). Google ne permet pas de fixer la couleur via ce lien : choisis « Banane » une fois l'événement ouvert.</p>
+
+<script>
+const KEY = 'boxing-pack-v1';
+const SHEET_URL_KEY = 'boxing-sheet-url';
+const DEFAULT_SHEET_URL = 'https://script.google.com/macros/s/AKfycby2M97PnK5LvI9i8y0YcdR6AWJR9Jtq5Pvk2VoWp24Hp8fYcUuMTo7u1dOn33_TgpPK/exec';
+const PACK_PRICE = 300;
+const PACK_SIZE = 10;
+
+const dateInput = document.getElementById('sessionDate');
+const timeInput = document.getElementById('sessionTime');
+const sheetUrlInput = document.getElementById('sheetUrl');
+const syncStatus = document.getElementById('syncStatus');
+const today = new Date().toISOString().slice(0,10);
+dateInput.value = today;
+timeInput.value = '19:00';
+
+function getSheetUrl() {
+  try {
+    const stored = localStorage.getItem(SHEET_URL_KEY);
+    if (stored) return stored;
+  } catch (e) {}
+  return DEFAULT_SHEET_URL;
+}
+
+function saveSheetUrl(url) {
+  try { localStorage.setItem(SHEET_URL_KEY, url); } catch (e) {}
+}
+
+sheetUrlInput.value = getSheetUrl();
+sheetUrlInput.addEventListener('change', () => {
+  saveSheetUrl(sheetUrlInput.value.trim());
+  syncStatus.textContent = 'URL enregistrée sur cet appareil.';
+});
+
+function sendToSheet(entry) {
+  const url = getSheetUrl();
+  if (!url) return;
+  fetch(url, {
+    method: 'POST',
+    mode: 'no-cors',
+    keepalive: true,
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(entry)
+  }).catch(() => {});
+}
+
+document.getElementById('syncBtn').addEventListener('click', () => {
+  const url = getSheetUrl();
+  if (!url) {
+    syncStatus.textContent = 'Colle d\'abord ton URL Apps Script ci-dessus.';
+    return;
+  }
+  if (!state.sessions.length) {
+    syncStatus.textContent = 'Aucune séance à synchroniser.';
+    return;
+  }
+  state.sessions.forEach(s => sendToSheet(s));
+  syncStatus.textContent = state.sessions.length + ' séance(s) envoyée(s) (vérifie ton Sheet pour confirmer).';
+});
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { total: PACK_SIZE, used: 0, price: PACK_PRICE, sessions: [] };
+}
+
+function saveState(state) {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function buildCalendarLink(date, time) {
+  const [y, m, d] = date.split('-');
+  const [hh, mm] = time.split(':');
+  const start = new Date(Number(y), Number(m) - 1, Number(d), Number(hh), Number(mm));
+  const end = new Date(start.getTime() + 60 * 60 * 1000);
+  const fmt = (dt) => dt.getFullYear() + pad(dt.getMonth() + 1) + pad(dt.getDate()) + 'T' + pad(dt.getHours()) + pad(dt.getMinutes()) + '00';
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: 'Séance de boxe',
+    dates: fmt(start) + '/' + fmt(end)
+  });
+  return 'https://calendar.google.com/calendar/render?' + params.toString();
+}
+
+function formatDate(iso) {
+  const [y, m, d] = iso.split('-');
+  return d + '/' + m + '/' + y.slice(2);
+}
+
+let state = loadState();
+
+function render() {
+  const remaining = state.total - state.used;
+  document.getElementById('remaining').textContent = remaining;
+  document.getElementById('totalSessions').textContent = state.total;
+  document.getElementById('perSession').textContent = Math.round(state.price / state.total) + '€';
+
+  const dotsEl = document.getElementById('dots');
+  dotsEl.innerHTML = '';
+  for (let i = 1; i <= state.total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i <= state.used ? ' done' : '');
+    d.textContent = i;
+    dotsEl.appendChild(d);
+  }
+
+  const logEl = document.getElementById('log');
+  const histCountEl = document.getElementById('histCount');
+  if (!state.sessions.length) {
+    logEl.innerHTML = '<div class="log-empty">Aucune séance enregistrée pour le moment.</div>';
+    histCountEl.textContent = '';
+  } else {
+    histCountEl.textContent = ' (' + state.sessions.length + ')';
+    logEl.innerHTML = state.sessions.slice().reverse().map((s, idx) => {
+      const num = state.sessions.length - idx;
+      return '<div class="log-row"><span class="log-num">#' + num + '</span><span class="log-date">' + formatDate(s.date) + '</span><span class="log-time">' + s.time + '</span></div>';
+    }).join('');
+  }
+
+  document.getElementById('logBtn').disabled = remaining <= 0;
+  document.getElementById('logBtn').textContent = remaining <= 0 ? 'Forfait terminé' : "J'ai fait une séance";
+  document.getElementById('calLink').href = buildCalendarLink(dateInput.value || today, timeInput.value || '19:00');
+}
+
+document.getElementById('logBtn').addEventListener('click', () => {
+  if (state.used >= state.total) return;
+  const date = dateInput.value || today;
+  const time = timeInput.value || '19:00';
+  state.used += 1;
+  state.sessions.push({ date, time });
+  saveState(state);
+  sendToSheet({ date, time });
+  render();
+});
+
+document.getElementById('newPackBtn').addEventListener('click', () => {
+  state = { total: PACK_SIZE, used: 0, price: PACK_PRICE, sessions: state.sessions };
+  saveState(state);
+  render();
+});
+
+dateInput.addEventListener('change', render);
+timeInput.addEventListener('change', render);
+
+render();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then((reg) => {
+      reg.update();
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'activated') {
+            window.location.reload();
+          }
+        });
+      });
+    });
+  });
+}
+</script>
+
+</body>
+</html>
