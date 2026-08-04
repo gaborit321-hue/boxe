@@ -17,8 +17,8 @@
 <style>
   :root {
     --bg: #14110d;
-    --surface: #1e1a15;
-    --surface-raised: #26211a;
+    --surface: rgba(30,26,21,0.82);
+    --surface-raised: rgba(38,33,26,0.88);
     --rope: #332b21;
     --red: #c8272c;
     --gold: #cf9f3f;
@@ -31,7 +31,10 @@
   body {
     margin: 0;
     padding: 0 0 48px;
-    background: var(--bg);
+    background: linear-gradient(180deg, rgba(20,17,13,0.82), rgba(20,17,13,0.93) 40%, rgba(20,17,13,0.97)), url('background.jpg');
+    background-size: cover;
+    background-position: top center;
+    background-attachment: fixed;
     color: var(--text);
     font-family: 'Inter', -apple-system, sans-serif;
     max-width: 480px;
@@ -120,6 +123,8 @@
 
   .panel {
     background: var(--surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     margin: 0 16px 16px;
     border-radius: 14px;
     padding: 18px 18px 20px;
@@ -181,6 +186,8 @@
     list-style: none;
     cursor: pointer;
     background: var(--surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--rope);
     border-radius: 14px;
     padding: 16px 18px;
@@ -204,6 +211,8 @@
 
   .log {
     background: var(--surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--rope);
     border-top: none;
     border-radius: 0 0 14px 14px;
@@ -232,11 +241,36 @@
     line-height: 1.6;
   }
 
+  .version-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 24px 20px 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .version-row button {
+    width: auto;
+    padding: 8px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 0;
+    border: 1px solid var(--rope);
+    background: var(--surface-raised);
+    color: var(--muted);
+  }
+
   details.settings { margin: 0 16px 16px; }
   details.settings summary {
     list-style: none;
     cursor: pointer;
     background: var(--surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--rope);
     border-radius: 14px;
     padding: 16px 18px;
@@ -255,6 +289,8 @@
   details.settings[open] summary { border-radius: 14px 14px 0 0; border-bottom: none; }
   .settings-body {
     background: var(--surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--rope);
     border-top: none;
     border-radius: 0 0 14px 14px;
@@ -334,6 +370,11 @@
 </details>
 
 <p class="note">Le lien « Ajouter au calendrier » ouvre Google Calendar pré-rempli (1h). Google ne permet pas de fixer la couleur via ce lien : choisis « Banane » une fois l'événement ouvert.</p>
+
+<div class="version-row">
+  <span id="versionLabel">Version —</span>
+  <button type="button" id="checkUpdateBtn">Vérifier les mises à jour</button>
+</div>
 
 <script>
 const KEY = 'boxing-pack-v1';
@@ -501,6 +542,50 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+// Doit rester identique à APP_VERSION dans sw.js — à incrémenter à chaque déploiement.
+const APP_VERSION = '1.0.0';
+
+const versionLabel = document.getElementById('versionLabel');
+const checkUpdateBtn = document.getElementById('checkUpdateBtn');
+versionLabel.textContent = 'Version ' + APP_VERSION;
+
+checkUpdateBtn.addEventListener('click', async () => {
+  if (!('serviceWorker' in navigator)) {
+    versionLabel.textContent = 'Service worker non supporté.';
+    return;
+  }
+  checkUpdateBtn.disabled = true;
+  versionLabel.textContent = 'Vérification...';
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) {
+      versionLabel.textContent = 'Service worker indisponible.';
+      checkUpdateBtn.disabled = false;
+      return;
+    }
+    await reg.update();
+    const worker = reg.waiting || reg.active;
+    let remoteVersion = null;
+    if (worker) {
+      remoteVersion = await new Promise((resolve) => {
+        const channel = new MessageChannel();
+        channel.port1.onmessage = (e) => resolve(e.data && e.data.version);
+        worker.postMessage('GET_VERSION', [channel.port2]);
+        setTimeout(() => resolve(null), 1500);
+      });
+    }
+    if (remoteVersion && remoteVersion !== APP_VERSION) {
+      versionLabel.textContent = 'Nouvelle version ' + remoteVersion + ', rechargement...';
+      setTimeout(() => window.location.reload(), 800);
+      return;
+    }
+    versionLabel.textContent = 'À jour (v' + APP_VERSION + ').';
+  } catch (e) {
+    versionLabel.textContent = 'Impossible de vérifier.';
+  }
+  checkUpdateBtn.disabled = false;
+});
 </script>
 
 </body>
