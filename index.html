@@ -31,7 +31,7 @@
   body {
     margin: 0;
     padding: 0 0 48px;
-    background: linear-gradient(180deg, rgba(20,17,13,0.82), rgba(20,17,13,0.93) 40%, rgba(20,17,13,0.97)), url('background.jpg');
+    background: linear-gradient(180deg, rgba(20,17,13,0.45), rgba(20,17,13,0.62) 40%, rgba(20,17,13,0.78)), url('background.jpg');
     background-size: cover;
     background-position: top center;
     background-attachment: fixed;
@@ -544,7 +544,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // Doit rester identique à APP_VERSION dans sw.js — à incrémenter à chaque déploiement.
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.0.1';
 
 const versionLabel = document.getElementById('versionLabel');
 const checkUpdateBtn = document.getElementById('checkUpdateBtn');
